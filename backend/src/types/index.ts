@@ -14,6 +14,8 @@ export interface AuthRequest extends Request {
     email: string;
   };
   userId?: string;
+  file?: Express.Multer.File;
+  files?: Express.Multer.File[];
 }
 
 export interface Interview {
