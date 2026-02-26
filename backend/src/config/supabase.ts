@@ -1,11 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const supabaseServiceKey = 
+  process.env.SUPABASE_SERVICE_KEY || 
+  process.env.SUPABASE_SERVICE_ROLE_KEY || 
+  process.env.SUPABASE_KEY ||
+  process.env.SUPABASE_ANON_KEY || '';
 
 console.log('Environment check:');
 console.log('SUPABASE_URL:', supabaseUrl ? 'Set' : 'Missing');
-console.log('SUPABASE_SERVICE_KEY:', supabaseServiceKey ? 'Set' : 'Missing');
+console.log('SUPABASE_SERVICE_KEY:', process.env.SUPABASE_SERVICE_KEY ? 'Set' : 'Missing');
+console.log('SUPABASE_SERVICE_ROLE_KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'Set' : 'Missing');
+console.log('SUPABASE_KEY:', process.env.SUPABASE_KEY ? 'Set' : 'Missing');
+console.log('SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY ? 'Set' : 'Missing');
 console.log('All env vars:', Object.keys(process.env).filter(k => k.includes('SUPABASE')));
 
 if (!supabaseUrl || !supabaseServiceKey) {
