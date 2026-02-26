@@ -83,7 +83,7 @@ router.post(
         return;
       }
 
-      const { interview_type } = req.body;
+      const { interview_type } = (req as any).body;
       const userId = req.user?.id;
       const resumeFile = req.file;
 
@@ -222,7 +222,7 @@ router.post(
         return;
       }
 
-      const { question_id, answer_text } = req.body;
+      const { question_id, answer_text } = (req as any).body;
       const audioFile = req.file;
 
       let audioUrl: string | undefined;
@@ -316,7 +316,7 @@ router.post(
   upload.single('video'),
   async (req: AuthRequest, res: Response) => {
     try {
-      const { interviewId } = req.params;
+      const { interviewId } = (req as any).params;
       const videoFile = req.file;
 
       let videoUrl: string | undefined;
@@ -410,7 +410,7 @@ router.post(
  */
 router.get('/:interviewId', authenticateToken, async (req: AuthRequest, res: Response) => {
   try {
-    const { interviewId } = req.params;
+    const { interviewId } = (req as any).params;
 
     const { data: interview, error } = await supabaseAdmin
       .from('interviews')
