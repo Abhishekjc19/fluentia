@@ -20,8 +20,7 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "declaration": false,
-    "sourceMap": false,
-    "types": ["node", "express", "multer"]
+    "sourceMap": false
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
