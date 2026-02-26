@@ -3,8 +3,13 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || '';
 
+console.log('Environment check:');
+console.log('SUPABASE_URL:', supabaseUrl ? 'Set' : 'Missing');
+console.log('SUPABASE_SERVICE_KEY:', supabaseServiceKey ? 'Set' : 'Missing');
+console.log('All env vars:', Object.keys(process.env).filter(k => k.includes('SUPABASE')));
+
 if (!supabaseUrl || !supabaseServiceKey) {
-  throw new Error('Missing Supabase environment variables');
+  throw new Error(`Missing Supabase environment variables: URL=${!!supabaseUrl}, KEY=${!!supabaseServiceKey}`);
 }
 
 // Use service key for both clients since we're doing server-side operations
