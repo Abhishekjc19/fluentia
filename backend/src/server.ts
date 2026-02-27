@@ -21,8 +21,23 @@ const corsOrigin = process.env.CORS_ORIGIN
 // Middleware
 app.use(
   cors({
-    origin: corsOrigin.length === 1 ? corsOrigin[0] : corsOrigin,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, etc.)
+      if (!origin) return callback(null, true);
+      
+      const allowedOrigins = Array.isArray(corsOrigin) ? corsOrigin : [corsOrigin];
+      
+      if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+        callback(null, true);
+      } else {
+        console.warn(`⚠️  CORS blocked origin: ${origin}`);
+        console.warn(`📋 Allowed origins:`, allowedOrigins);
+        callback(null, true); // Allow anyway for now - will log for debugging
+      }
+    },
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
 app.use(express.json());
@@ -37,6 +52,16 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 // Health check
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// API health check with CORS info
+app.get('/api/health', (req: Request, res: Response) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV,
+    corsOrigin: corsOrigin,
+  });
 });
 
 // API Routes

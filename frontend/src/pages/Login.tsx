@@ -17,12 +17,19 @@ export default function Login() {
     setLoading(true);
 
     try {
+      console.log('🔐 Attempting login...', { email });
       const response = await apiClient.login(email, password);
+      console.log('✅ Login successful', response);
       setAuth(response.user, response.token);
       toast.success('Login successful!');
       navigate('/dashboard');
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Login failed');
+      console.error('❌ Login error:', error);
+      const errorMessage = error.response?.data?.error 
+        || error.response?.data?.message
+        || error.message 
+        || 'Login failed. Please check your connection and try again.';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }

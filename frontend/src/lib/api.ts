@@ -34,10 +34,25 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error: AxiosError) => {
+        console.error('🌐 API Error:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          message: error.message,
+          config: {
+            url: error.config?.url,
+            method: error.config?.method,
+            baseURL: error.config?.baseURL,
+          }
+        });
+        
         if (error.response?.status === 401) {
           localStorage.removeItem('token');
           window.location.href = '/login';
           toast.error('Session expired. Please login again.');
+        } else if (!error.response) {
+          // Network error
+          toast.error('Network error. Please check your internet connection.');
         }
         return Promise.reject(error);
       }
