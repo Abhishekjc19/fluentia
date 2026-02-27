@@ -99,6 +99,8 @@ router.post(
 
       const { email, password } = req.body;
 
+      console.log('🔐 Login attempt:', { email });
+
       // Get user from database
       const { data: user, error } = await supabaseAdmin
         .from('users')
@@ -107,16 +109,38 @@ router.post(
         .single();
 
       if (error || !user) {
+        console.log('❌ User not found:', email);
         res.status(401).json({ error: 'Invalid credentials' });
         return;
       }
 
+      console.log('✅ User found, verifying password...');
+
+      // Check if password field exists
+      if (!user.password) {
+        console.log('❌ User has no password hash stored!');
+        res.status(500).json({ error: 'Account setup incomplete. Please contact support.' });
+        return;
+      }
+
       // Verify password
-      const isValidPassword = await bcrypt.compare(password, user.password);
+      let isValidPassword = false;
+      try {
+        isValidPassword = await bcrypt.compare(password, user.password);
+        console.log('🔑 Password verification result:', isValidPassword);
+      } catch (bcryptError) {
+        console.error('❌ Bcrypt comparison error:', bcryptError);
+        res.status(500).json({ error: 'Password verification failed' });
+        return;
+      }
+      
       if (!isValidPassword) {
+        console.log('❌ Invalid password for user:', email);
         res.status(401).json({ error: 'Invalid credentials' });
         return;
       }
+
+      console.log('✅ Password valid for user:', email);
 
       // Generate JWT token
       const token = jwt.sign(
