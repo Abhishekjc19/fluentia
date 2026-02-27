@@ -16,14 +16,15 @@ function App() {
     <Router>
       <Toaster position="top-right" />
       <Routes>
-        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" />} />
-        <Route path="/signup" element={!isAuthenticated ? <Signup /> : <Navigate to="/dashboard" />} />
-        <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} />
-        <Route path="/interview/setup" element={isAuthenticated ? <InterviewSetup /> : <Navigate to="/login" />} />
-        <Route path="/interview/:interviewId" element={isAuthenticated ? <Interview /> : <Navigate to="/login" />} />
-        <Route path="/results/:interviewId" element={isAuthenticated ? <Results /> : <Navigate to="/login" />} />
-        <Route path="/history" element={isAuthenticated ? <History /> : <Navigate to="/login" />} />
-        <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} />} />
+        <Route path="/login" element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} />
+        <Route path="/signup" element={!isAuthenticated ? <Signup /> : <Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />} />
+        <Route path="/interview/setup" element={isAuthenticated ? <InterviewSetup /> : <Navigate to="/login" replace />} />
+        <Route path="/interview/:interviewId" element={isAuthenticated ? <Interview /> : <Navigate to="/login" replace />} />
+        <Route path="/results/:interviewId" element={isAuthenticated ? <Results /> : <Navigate to="/login" replace />} />
+        <Route path="/history" element={isAuthenticated ? <History /> : <Navigate to="/login" replace />} />
+        <Route path="/" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
+        <Route path="*" element={<Navigate to={isAuthenticated ? "/dashboard" : "/login"} replace />} />
       </Routes>
     </Router>
   );
