@@ -11,10 +11,17 @@ import userRoutes from './routes/user.routes';
 const app: Application = express();
 const PORT = process.env.PORT || 3000;
 
+// Parse CORS origin - handle multiple origins and clean whitespace
+const corsOrigin = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean)
+  : ['http://localhost:5173'];
+
 // Middleware
 app.use(
   cors({
-    origin: process.env.CORS_ORIGIN || 'http://localhost:5173',
+    origin: corsOrigin.length === 1 ? corsOrigin[0] : corsOrigin,
     credentials: true,
   })
 );
@@ -55,7 +62,7 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📝 Environment: ${process.env.NODE_ENV}`);
-  console.log(`🌐 CORS enabled for: ${process.env.CORS_ORIGIN}`);
+  console.log(`🌐 CORS enabled for: ${JSON.stringify(corsOrigin)}`);
 });
 
 export default app;
