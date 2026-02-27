@@ -123,17 +123,32 @@ router.post(
         return;
       }
 
+      // Log hash format for debugging
+      console.log('🔍 Password hash info:', {
+        hashLength: user.password?.length,
+        hashPrefix: user.password?.substring(0, 7),
+        inputPasswordLength: password.length
+      });
+
       // Verify password
       let isValidPassword = false;
       try {
         isValidPassword = await bcrypt.compare(password, user.password);
         console.log('🔑 Password verification result:', isValidPassword);
+        
+        if (!isValidPassword) {
+          // Double-check with trim in case of whitespace issues
+          const trimmedPassword = password.trim();
+          const doubleCheck = await bcrypt.compare(trimmedPassword, user.password);
+          console.log('🔑 Double-check with trimmed password:', doubleCheck);
+          isValidPassword = doubleCheck;
+        }
       } catch (bcryptError) {
         console.error('❌ Bcrypt comparison error:', bcryptError);
         res.status(500).json({ error: 'Password verification failed' });
         return;
       }
-      
+
       if (!isValidPassword) {
         console.log('❌ Invalid password for user:', email);
         res.status(401).json({ error: 'Invalid credentials' });
