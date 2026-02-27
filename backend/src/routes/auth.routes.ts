@@ -127,35 +127,36 @@ router.post(
       console.log('🔍 Password hash info:', {
         hashLength: user.password?.length,
         hashPrefix: user.password?.substring(0, 7),
-        inputPasswordLength: password.length
+        inputPasswordLength: password.length,
       });
 
       // Verify password
+      console.log('🔍 About to verify password...');
       let isValidPassword = false;
       try {
         isValidPassword = await bcrypt.compare(password, user.password);
-        console.log('🔑 Password verification result:', isValidPassword);
-        
-        if (!isValidPassword) {
-          // Double-check with trim in case of whitespace issues
-          const trimmedPassword = password.trim();
-          const doubleCheck = await bcrypt.compare(trimmedPassword, user.password);
-          console.log('🔑 Double-check with trimmed password:', doubleCheck);
-          isValidPassword = doubleCheck;
-        }
+        console.log(
+          '🔑 Password verification result:',
+          isValidPassword,
+          '| Type:',
+          typeof isValidPassword
+        );
       } catch (bcryptError) {
         console.error('❌ Bcrypt comparison error:', bcryptError);
         res.status(500).json({ error: 'Password verification failed' });
         return;
       }
 
-      if (!isValidPassword) {
-        console.log('❌ Invalid password for user:', email);
+      // CRITICAL: Reject if password is invalid
+      if (isValidPassword !== true) {
+        console.log('❌ AUTHENTICATION FAILED - Invalid password for user:', email);
         res.status(401).json({ error: 'Invalid credentials' });
         return;
       }
 
-      console.log('✅ Password valid for user:', email);
+      console.log('✅ AUTHENTICATION SUCCESS - Password valid for user:', email);
+
+      console.log('✅ AUTHENTICATION SUCCESS - Password valid for user:', email);
 
       // Generate JWT token
       const token = jwt.sign(
@@ -164,7 +165,7 @@ router.post(
         { expiresIn: '7d' }
       );
 
-      res.json({
+      const responseData = {
         message: 'Login successful',
         user: {
           id: user.id,
@@ -172,7 +173,10 @@ router.post(
           full_name: user.full_name,
         },
         token,
-      });
+      };
+
+      console.log('📤 Sending success response for:', email);
+      res.json(responseData);
     } catch (error) {
       console.error('Login error:', error);
       res.status(500).json({ error: 'Failed to login' });
