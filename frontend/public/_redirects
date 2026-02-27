@@ -1,1 +1,3 @@
+/api/*  https://fluentia-7mdn.onrender.com/api/:splat  200
+/health  https://fluentia-7mdn.onrender.com/health  200
 /*    /index.html   200
