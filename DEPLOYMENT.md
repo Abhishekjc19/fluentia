@@ -33,12 +33,14 @@ This will open a browser - login with your Google account.
 **Double-click:** `deploy-backend.bat`
 
 Or run manually:
+
 ```bash
 cd c:/Fluentia
 ./deploy-backend.bat
 ```
 
 When prompted:
+
 - Enter your Google Cloud Project ID
 - Wait for deployment (5-10 minutes)
 - **SAVE THE BACKEND URL** shown at the end
@@ -63,6 +65,7 @@ CORS_ORIGIN=*
 ```
 
 Then run:
+
 ```bash
 gcloud run services update fluentia-backend --region us-central1 --env-vars-file backend-env.txt
 ```
@@ -72,6 +75,7 @@ gcloud run services update fluentia-backend --region us-central1 --env-vars-file
 **Double-click:** `deploy-frontend.bat`
 
 When prompted:
+
 - Enter your Google Cloud Project ID
 - Enter the Backend URL from Step 2
 - Wait for deployment (3-5 minutes)
@@ -89,12 +93,14 @@ Replace `YOUR_FRONTEND_URL` with the URL from Step 4.
 ## Your Deployed URLs
 
 After deployment:
+
 - **Frontend:** https://fluentia-frontend-xxxxx.run.app
 - **Backend:** https://fluentia-backend-xxxxx.run.app
 
 ## Free Tier Limits
 
 Google Cloud Run free tier includes:
+
 - ✅ 2 million requests per month
 - ✅ 360,000 GB-seconds of memory
 - ✅ 180,000 vCPU-seconds of compute time
@@ -105,11 +111,13 @@ Perfect for demos and testing!
 ## Troubleshooting
 
 **If deployment fails:**
+
 1. Check if billing is enabled
 2. Verify all APIs are enabled
 3. Make sure you're in the correct project: `gcloud config get-value project`
 
 **If app doesn't work:**
+
 1. Check environment variables: `gcloud run services describe fluentia-backend --region us-central1`
 2. View logs: https://console.cloud.google.com/run
 3. Verify CORS settings in backend
@@ -117,6 +125,7 @@ Perfect for demos and testing!
 ## Re-deploying After Changes
 
 Just push to GitHub and run the scripts again:
+
 ```bash
 git add .
 git commit -m "Update"

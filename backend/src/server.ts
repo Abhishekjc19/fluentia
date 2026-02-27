@@ -24,9 +24,9 @@ app.use(
     origin: (origin, callback) => {
       // Allow requests with no origin (mobile apps, curl, etc.)
       if (!origin) return callback(null, true);
-      
+
       const allowedOrigins = Array.isArray(corsOrigin) ? corsOrigin : [corsOrigin];
-      
+
       if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
         callback(null, true);
       } else {
@@ -56,8 +56,8 @@ app.get('/health', (req: Request, res: Response) => {
 
 // API health check with CORS info
 app.get('/api/health', (req: Request, res: Response) => {
-  res.json({ 
-    status: 'ok', 
+  res.json({
+    status: 'ok',
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV,
     corsOrigin: corsOrigin,

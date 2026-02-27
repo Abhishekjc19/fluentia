@@ -14,7 +14,7 @@
   }
 
   .btn-primary {
-    @apply btn bg-primary-600 text-white hover:bg-primary-700 disabled:bg-gray-300 disabled:cursor-not-allowed;
+    @apply btn bg-[#03e3fc] text-white hover:bg-[#02c4d9] disabled:bg-gray-300 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
@@ -22,10 +22,10 @@
   }
 
   .input {
-    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent;
+    @apply w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#03e3fc] focus:border-transparent;
   }
 
   .card {
-    @apply bg-white rounded-lg shadow-md p-6;
+    @apply bg-white rounded-lg shadow-lg p-6 border border-gray-200;
   }
 }

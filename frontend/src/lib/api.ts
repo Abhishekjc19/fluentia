@@ -11,7 +11,7 @@ const MAX_RETRIES = 2;
 const RETRY_DELAY = 1000; // 1 second
 
 // Helper function to wait
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 class ApiClient {
   private client: AxiosInstance;
@@ -52,9 +52,9 @@ class ApiClient {
             url: error.config?.url,
             method: error.config?.method,
             baseURL: error.config?.baseURL,
-          }
+          },
         });
-        
+
         if (error.response?.status === 401) {
           localStorage.removeItem('token');
           window.location.href = '/login';
@@ -77,7 +77,7 @@ class ApiClient {
   // Warm up the backend (for free tier cold starts)
   private async warmUpBackend() {
     if (this.isWarmingUp) return;
-    
+
     this.isWarmingUp = true;
     try {
       console.log('🔥 Warming up backend...');
@@ -91,18 +91,14 @@ class ApiClient {
   }
 
   // Retry wrapper for API calls
-  private async retryRequest<T>(
-    request: () => Promise<T>,
-    retries = MAX_RETRIES
-  ): Promise<T> {
+  private async retryRequest<T>(request: () => Promise<T>, retries = MAX_RETRIES): Promise<T> {
     try {
       return await request();
     } catch (error: any) {
       // Only retry on network errors or timeouts
-      const shouldRetry = 
-        (!error.response && retries > 0) || 
-        (error.code === 'ECONNABORTED' && retries > 0);
-      
+      const shouldRetry =
+        (!error.response && retries > 0) || (error.code === 'ECONNABORTED' && retries > 0);
+
       if (shouldRetry) {
         console.log(`🔄 Retrying request... (${MAX_RETRIES - retries + 1}/${MAX_RETRIES})`);
         await wait(RETRY_DELAY);

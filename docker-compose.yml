@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  # Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: fluentia-backend
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    env_file:
+      - ./backend/.env
+    networks:
+      - fluentia-network
+    depends_on:
+      - postgres
+    volumes:
+      - ./backend/uploads:/app/uploads
+
+  # Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: fluentia-frontend
+    restart: unless-stopped
+    ports:
+      - '80:80'
+    environment:
+      - VITE_API_URL=http://backend:3000/api
+    networks:
+      - fluentia-network
+    depends_on:
+      - backend
+
+  # PostgreSQL Database (optional - can use Supabase instead)
+  postgres:
+    image: postgres:15-alpine
+    container_name: fluentia-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=fluentia
+      - POSTGRES_PASSWORD=fluentia_password
+      - POSTGRES_DB=fluentia
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - fluentia-network
+    ports:
+      - '5432:5432'
+
+networks:
+  fluentia-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
