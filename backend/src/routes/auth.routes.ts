@@ -130,16 +130,18 @@ router.post(
         inputPasswordLength: password.length,
       });
 
-      // Verify password
+      // Verify password with STRICT validation
       console.log('🔍 About to verify password...');
-      let isValidPassword = false;
+      let isValidPassword: boolean;
       try {
         isValidPassword = await bcrypt.compare(password, user.password);
         console.log(
           '🔑 Password verification result:',
           isValidPassword,
           '| Type:',
-          typeof isValidPassword
+          typeof isValidPassword,
+          '| Strict check:',
+          isValidPassword === true
         );
       } catch (bcryptError) {
         console.error('❌ Bcrypt comparison error:', bcryptError);
@@ -147,14 +149,17 @@ router.post(
         return;
       }
 
-      // CRITICAL: Reject if password is invalid
-      if (isValidPassword !== true) {
+      // CRITICAL: Triple-check password validation
+      if (!isValidPassword || isValidPassword !== true || typeof isValidPassword !== 'boolean') {
         console.log('❌ AUTHENTICATION FAILED - Invalid password for user:', email);
+        console.log('❌ Rejection reason:', {
+          notTruthy: !isValidPassword,
+          notStrictTrue: isValidPassword !== true,
+          notBoolean: typeof isValidPassword !== 'boolean',
+        });
         res.status(401).json({ error: 'Invalid credentials' });
         return;
       }
-
-      console.log('✅ AUTHENTICATION SUCCESS - Password valid for user:', email);
 
       console.log('✅ AUTHENTICATION SUCCESS - Password valid for user:', email);
 
@@ -190,6 +195,74 @@ router.post(
  */
 router.post('/logout', (req: Request, res: Response) => {
   res.json({ message: 'Logout successful' });
+});
+
+/**
+ * DEBUG: Check user password hash (REMOVE IN PRODUCTION)
+ * GET /api/auth/debug-user/:email
+ */
+router.get('/debug-user/:email', async (req: Request, res: Response) => {
+  try {
+    const { email } = req.params;
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select('id, email, password, full_name, created_at')
+      .eq('email', email)
+      .single();
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    res.json({
+      id: user.id,
+      email: user.email,
+      full_name: user.full_name,
+      created_at: user.created_at,
+      hasPassword: !!user.password,
+      passwordHashLength: user.password?.length,
+      passwordHashPrefix: user.password?.substring(0, 7),
+      isBcryptHash: user.password?.startsWith('$2b$') || user.password?.startsWith('$2a$'),
+    });
+  } catch (error) {
+    console.error('Debug error:', error);
+    res.status(500).json({ error: 'Debug failed' });
+  }
+});
+
+/**
+ * DEBUG: Test password verification
+ * POST /api/auth/test-password
+ */
+router.post('/test-password', async (req: Request, res: Response) => {
+  try {
+    const { email, password } = req.body;
+
+    const { data: user } = await supabaseAdmin
+      .from('users')
+      .select('*')
+      .eq('email', email)
+      .single();
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    const isValid = await bcrypt.compare(password, user.password);
+
+    res.json({
+      email: user.email,
+      passwordProvided: password.length + ' chars',
+      hashStored: user.password?.substring(0, 20) + '...',
+      isValidPassword: isValid,
+      result: isValid ? '✅ CORRECT PASSWORD' : '❌ WRONG PASSWORD',
+    });
+  } catch (error) {
+    console.error('Test error:', error);
+    res.status(500).json({ error: 'Test failed' });
+  }
 });
 
 export default router;
