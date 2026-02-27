@@ -3,6 +3,9 @@ import toast from 'react-hot-toast';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
 
+// Log API URL for debugging
+console.log('🔗 API URL:', API_URL);
+
 class ApiClient {
   private client: AxiosInstance;
 
@@ -12,6 +15,7 @@ class ApiClient {
       headers: {
         'Content-Type': 'application/json',
       },
+      withCredentials: true,
     });
 
     // Request interceptor to add auth token
