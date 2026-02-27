@@ -10,22 +10,35 @@ export default function Signup() {
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('Creating account...');
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setLoadingMessage('Creating account...');
 
     try {
+      // Show warm-up message after 3 seconds
+      const warmupTimer = setTimeout(() => {
+        setLoadingMessage('Waking up server... This may take 30 seconds on first request');
+      }, 3000);
+      
       const response = await apiClient.signup(email, password, fullName);
+      clearTimeout(warmupTimer);
+      
       setAuth(response.user, response.token);
       toast.success('Account created successfully!');
       navigate('/dashboard');
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Signup failed');
+      const errorMessage = error.response?.data?.error 
+        || error.response?.data?.message
+        || 'Signup failed. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
+      setLoadingMessage('Creating account...');
     }
   };
 
@@ -102,7 +115,7 @@ export default function Signup() {
               disabled={loading}
               className="btn-primary w-full"
             >
-              {loading ? 'Creating account...' : 'Sign Up'}
+              {loading ? loadingMessage : 'Sign Up'}
             </button>
           </form>
 

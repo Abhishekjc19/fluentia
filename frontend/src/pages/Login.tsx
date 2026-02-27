@@ -9,16 +9,26 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('Logging in...');
   const navigate = useNavigate();
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setLoadingMessage('Logging in...');
 
     try {
       console.log('🔐 Attempting login...', { email });
+      
+      // Show warm-up message after 3 seconds
+      const warmupTimer = setTimeout(() => {
+        setLoadingMessage('Waking up server... This may take 30 seconds on first request');
+      }, 3000);
+      
       const response = await apiClient.login(email, password);
+      clearTimeout(warmupTimer);
+      
       console.log('✅ Login successful', response);
       setAuth(response.user, response.token);
       toast.success('Login successful!');
@@ -32,6 +42,7 @@ export default function Login() {
       toast.error(errorMessage);
     } finally {
       setLoading(false);
+      setLoadingMessage('Logging in...');
     }
   };
 
@@ -89,7 +100,7 @@ export default function Login() {
               disabled={loading}
               className="btn-primary w-full"
             >
-              {loading ? 'Logging in...' : 'Login'}
+              {loading ? loadingMessage : 'Login'}
             </button>
           </form>
 
